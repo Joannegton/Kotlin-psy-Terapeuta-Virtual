@@ -27,7 +27,7 @@ fun SaidaTexto(
 ){
 
     val alignment = if (isEnviadaUsuario) Alignment.End else Alignment.Start
-    val backgroundColor = if (isEnviadaUsuario) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+    val backgroundColor = if (isEnviadaUsuario) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.tertiary
 
     Column(
         horizontalAlignment = alignment,
@@ -39,6 +39,7 @@ fun SaidaTexto(
             modifier = Modifier
                 .background(backgroundColor, shape = RoundedCornerShape(16.dp))
                 .padding(10.dp)
+
         ) {
             Text(
                 text = mensagem,

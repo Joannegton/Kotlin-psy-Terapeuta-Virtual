@@ -56,11 +56,14 @@ fun ChatScreen(modifier: Modifier = Modifier) {
     ) {
         LazyColumn(modifier = modifier.weight(1f), state = listState) {
             items(messages){message ->
+                val paddingModifier = if (message.tipo == "Usuario") Modifier.padding(start = 50.dp) else Modifier.padding(end = 50.dp)
+
                 Column(
                     horizontalAlignment = if (message.tipo == "Usuario") Alignment.Start else Alignment.End,
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
                         .padding(8.dp)
+                        .then(paddingModifier)
                 ) {
                     SaidaTexto(
                         mensagem = message.mensagem,

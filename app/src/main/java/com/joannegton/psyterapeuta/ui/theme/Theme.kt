@@ -13,15 +13,19 @@ import androidx.compose.ui.platform.LocalContext
 import java.security.Principal
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Principal,
-    secondary = Secundaria,
-    tertiary = Pink80
+    primary = RoxoAcinzentado,
+    secondary = VerdeAbacate,
+    tertiary = Beje,
+    background = CinzaEscuro,
+    onPrimary = CinzaEscuro
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Principal,
-    secondary = Secundaria,
-    tertiary = Pink40
+    primary = RoxoAcinzentado,
+    secondary = VerdeAbacate,
+    tertiary = Beje,
+    background = Fundo,
+    onPrimary = CinzaEscuro
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -42,11 +46,6 @@ fun PsyTerapeutaTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
