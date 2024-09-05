@@ -24,10 +24,11 @@ fun SaidaTexto(
     mensagem: String,
     horario: String,
     isEnviadaUsuario: Boolean
-){
+) {
 
     val alignment = if (isEnviadaUsuario) Alignment.End else Alignment.Start
-    val backgroundColor = if (isEnviadaUsuario) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.tertiary
+    val backgroundColor =
+        if (isEnviadaUsuario) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.tertiary
 
     Column(
         horizontalAlignment = alignment,
@@ -35,18 +36,15 @@ fun SaidaTexto(
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-        Box(
+        Text(
+            text = mensagem,
+            fontSize = 14.sp,
+            color = Color.Black,
             modifier = Modifier
                 .background(backgroundColor, shape = RoundedCornerShape(16.dp))
                 .padding(10.dp)
+        )
 
-        ) {
-            Text(
-                text = mensagem,
-                fontSize = 14.sp,
-                color = Color.Black
-            )
-        }
         Text(
             text = horario,
             fontSize = 10.sp,

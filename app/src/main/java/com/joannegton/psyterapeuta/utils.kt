@@ -16,6 +16,8 @@ import io.ktor.serialization.gson.gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 object Interation {
     private const val API_URL = " https://bc0c-201-55-46-78.ngrok-free.app/api/v1/interacoes/"
@@ -85,3 +87,10 @@ data class Message(
     val tipo: String,
 
 )
+
+fun formatarHoraParaBrasileiro(dataHora: String): String {
+    val formatoOriginal = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+    val formatoBrasileiro = SimpleDateFormat("dd/MM HH:mm", Locale("pt", "BR"))
+    val data = formatoOriginal.parse(dataHora)
+    return formatoBrasileiro.format(data)
+}

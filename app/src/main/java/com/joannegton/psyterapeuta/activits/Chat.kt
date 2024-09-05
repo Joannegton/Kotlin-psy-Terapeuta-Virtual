@@ -1,5 +1,6 @@
 package com.joannegton.psyterapeuta.activits
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.joannegton.psyterapeuta.Interation
 import com.joannegton.psyterapeuta.Message
+import com.joannegton.psyterapeuta.formatarHoraParaBrasileiro
 import com.joannegton.psyterapeuta.ui.components.EntradaTexto
 import com.joannegton.psyterapeuta.ui.components.SaidaTexto
 
@@ -32,8 +34,8 @@ fun ChatScreen(modifier: Modifier = Modifier) {
     val listState = rememberLazyListState()
 
 
-    val id_usuario = 2
-    val id_terapeuta = "psy172508057914245"
+    val id_usuario = 9
+    val id_terapeuta = "psy172551805015296"
 
     LaunchedEffect(Unit) {
         isLoading = true
@@ -62,12 +64,17 @@ fun ChatScreen(modifier: Modifier = Modifier) {
                     horizontalAlignment = if (message.tipo == "Usuario") Alignment.Start else Alignment.End,
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
-                        .padding(8.dp)
                         .then(paddingModifier)
                 ) {
+                    val data_hora = try {
+                        formatarHoraParaBrasileiro(message.data_hora)
+                    } catch (e: Exception) {
+                        Log.e("ChatScreen", "Error formatting date", e)
+                        message.data_hora // fallback to original date
+                    }
                     SaidaTexto(
                         mensagem = message.mensagem,
-                        horario = message.data_hora,
+                        horario = data_hora,
                         isEnviadaUsuario = message.tipo == "Usuario"
                     )
                 }
