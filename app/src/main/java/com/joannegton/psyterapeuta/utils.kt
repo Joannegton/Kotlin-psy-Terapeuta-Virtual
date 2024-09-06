@@ -17,6 +17,7 @@ import io.ktor.serialization.gson.gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -29,7 +30,12 @@ object Interation {
         }
     }
 
-    fun postRequest(prompt: String, id_usuario: Int, id_terapeuta: String, callback: (String) -> Unit) {
+    fun postRequest(
+        prompt: String,
+        id_usuario: Int,
+        id_terapeuta: String,
+        callback: (String) -> Unit
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response: HttpResponse = client.post(API_URL + "send") {
@@ -60,7 +66,8 @@ object Interation {
     fun getMessages(id_usuario: Int, id_terapeuta: String, callback: (List<Message>) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response: HttpResponse = client.get(API_URL + "list?id_usuario=$id_usuario&id_terapeuta=$id_terapeuta")
+                val response: HttpResponse =
+                    client.get(API_URL + "list?id_usuario=$id_usuario&id_terapeuta=$id_terapeuta")
                 if (response.status.value in 200..299) {
                     val messages: String = response.body()
                     Log.d("TAG", "Mensagens recebidas: $messages")
@@ -113,6 +120,82 @@ data class Message(
     val mensagem: String,
     val tipo: String,
 
+    )
+
+object UsuarioService {
+    private const val API_URL = "https://4af4-45-179-106-136.ngrok-free.app/api/v1/users/"
+
+    private val client = HttpClient(CIO) {
+        install(ContentNegotiation) {
+            gson()
+        }
+    }
+
+    fun createUser(nome: String, email: String, senha: String, callback: (String) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response: HttpResponse = client.post(API_URL + "create") {
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        mapOf(
+                            "nome" to nome,
+                            "email" to email,
+                            "senha" to senha
+                        )
+                    )
+                }
+                if (response.status.value in 200..299) {
+                    val responseBody = response.body<String>()
+                    callback(responseBody)
+                } else {
+                    callback("Erro: ${response.status.description}")
+                    Log.e("TAG", "Erro: ${response.status.description}")
+                }
+            } catch (e: Exception) {
+                callback("Erro ao processar resposta: ${e.message}")
+                Log.e("TAG", "Erro ao processar resposta: ${e.message}")
+            }
+        }
+    }
+
+    fun login(email: String, senha: String, callback: (String) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response: HttpResponse = client.post(API_URL + "login") {
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        mapOf(
+                            "email" to email,
+                            "senha" to senha
+                        )
+                    )
+                }
+                if (response.status.value in 200..299) {
+                    val responseBody = response.body<String>()
+                    withContext(Dispatchers.Main) {
+                        callback(responseBody)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        callback("Erro: ${response.status.description}")
+                    }
+                    Log.e("TAG", "Erro: ${response.status.description}")
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    callback("Erro ao processar resposta: ${e.message}")
+                }
+                Log.e("TAG", "Erro ao processar resposta: ${e.message}")
+            }
+        }
+    }}
+
+data class Usuario(
+    val id_usuario: Int,
+    val id_terapeuta: String,
+    val nome: String,
+    val email: String,
+    val senha: String
 )
 
 fun formatarHoraParaBrasileiro(dataHora: String): String {

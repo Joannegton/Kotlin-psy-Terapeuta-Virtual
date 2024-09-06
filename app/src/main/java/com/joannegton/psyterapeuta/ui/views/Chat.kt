@@ -1,4 +1,4 @@
-package com.joannegton.psyterapeuta.activits
+package com.joannegton.psyterapeuta.ui.views
 
 import android.util.Log
 import androidx.compose.foundation.Image

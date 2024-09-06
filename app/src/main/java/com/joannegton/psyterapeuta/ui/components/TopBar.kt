@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.joannegton.psyterapeuta.Interation
 import com.joannegton.psyterapeuta.R
-import com.joannegton.psyterapeuta.activits.ChatScreen
+import com.joannegton.psyterapeuta.ui.views.ChatScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

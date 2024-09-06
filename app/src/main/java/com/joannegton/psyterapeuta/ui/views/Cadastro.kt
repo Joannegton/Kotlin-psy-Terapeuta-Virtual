@@ -1,11 +1,9 @@
-package com.joannegton.psyterapeuta.activits
+package com.joannegton.psyterapeuta.ui.views
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,44 +30,56 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.joannegton.psyterapeuta.R
+import com.joannegton.psyterapeuta.UsuarioService
 import com.joannegton.psyterapeuta.ui.components.EntradaTexto
-import kotlin.math.truncate
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(navHostController: NavHostController) {
-
-    var email by remember { mutableStateOf("") }
-    var senha by remember { mutableStateOf("") }
-
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+fun CadastroScreen(navHostController: NavHostController) {
+    Column (
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp)
-    ) {
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ){
+        var nome by remember { mutableStateOf("") }
+        var email by remember { mutableStateOf("") }
+        var senha by remember { mutableStateOf("") }
+        var confirmarSenha by remember { mutableStateOf("") }
 
         Image(painter = painterResource(id = R.drawable.psy_pequeno), contentDescription = "Psy")
-        Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = "Realize seu Login",
+            text = "Realize seu Cadastro",
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
-        )
+                    )
         Spacer(modifier = Modifier.height(15.dp))
 
         EntradaTexto(
+            texto = nome,
+            onValueChange = { nome = it },
+            label = "Nome"
+        )
+        EntradaTexto(
             texto = email,
             onValueChange = { email = it },
-            label = "Email",
+            label = "Email"
         )
-        Spacer(modifier = Modifier.height(10.dp))
         EntradaTexto(
             texto = senha,
             onValueChange = { senha = it },
             label = "Senha",
+            isSenha = true
+        )
+        EntradaTexto(
+            texto = confirmarSenha,
+            onValueChange = { confirmarSenha = it },
+            label = "Confirmar Senha",
             imeAction = ImeAction.Done,
             isSenha = true
         )
@@ -77,9 +87,19 @@ fun LoginScreen(navHostController: NavHostController) {
 
         Button(
             onClick = {
-                navHostController.navigate("chat")
+                if(senha != confirmarSenha){
+                    return@Button
+                }
+                UsuarioService.createUser(nome, email, senha){
+                    if(it.startsWith("Erro")){
+                        return@createUser
+                    }
+                    CoroutineScope(Dispatchers.Main).launch {
+                        navHostController.navigate("login")
+                    }                }
+
             },
-            content = { Text(text = "Entrar", fontSize = 23.sp, fontWeight = FontWeight.Bold) },
+            content = { Text(text = "Cadastrar", fontSize = 23.sp, fontWeight = FontWeight.Bold) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 10.dp)
@@ -89,29 +109,13 @@ fun LoginScreen(navHostController: NavHostController) {
                 contentColor = Color.White
             )
         )
-
-        Spacer(modifier = Modifier.height(30.dp))
-
-        Row {
-            Text(text = "Não tem uma conta?", color = Color.Black, fontSize = 18.sp)
-            Text(
-                text = "Cadastre-se",
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(start = 10.dp)
-                    .clickable {
-                        navHostController.navigate("cadastro")
-                    }
-            )
-        }
         Spacer(modifier = Modifier.height(70.dp))
 
     }
-
 }
 
 @Preview
 @Composable
 private fun View() {
-    LoginScreen(navHostController = NavHostController(LocalContext.current))
+    CadastroScreen(navHostController = NavHostController(LocalContext.current))
 }
