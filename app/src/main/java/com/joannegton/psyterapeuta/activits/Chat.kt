@@ -29,10 +29,9 @@ import com.joannegton.psyterapeuta.ui.components.SaidaTexto
 
 @Composable
 fun ChatScreen(modifier: Modifier = Modifier) {
-    val messages = remember { mutableStateListOf<Message>() }
+    val messages = remember { ChatScreen.messages }
     var isLoading by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
-
 
     val id_usuario = 9
     val id_terapeuta = "psy172551805015296"
@@ -54,10 +53,9 @@ fun ChatScreen(modifier: Modifier = Modifier) {
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
-
     ) {
         LazyColumn(modifier = modifier.weight(1f), state = listState) {
-            items(messages){message ->
+            items(messages) { message ->
                 val paddingModifier = if (message.tipo == "Usuario") Modifier.padding(start = 50.dp) else Modifier.padding(end = 50.dp)
 
                 Column(
@@ -82,16 +80,18 @@ fun ChatScreen(modifier: Modifier = Modifier) {
         }
 
         EntradaTexto(onMessageSend = { message ->
-            messages.add(Message(
-                id = "temp", // Id Temporario
-                id_usuario = id_usuario,
-                id_terapeuta = id_terapeuta,
-                data_hora = "now", // hora temporaria
-                mensagem = message,
-                tipo = "Usuario"
-            ))
+            messages.add(
+                Message(
+                    id = "temp", // Id Temporario
+                    id_usuario = id_usuario,
+                    id_terapeuta = id_terapeuta,
+                    data_hora = "now", // hora temporaria
+                    mensagem = message,
+                    tipo = "Usuario"
+                )
+            )
 
-            Interation.postRequest(message, id_usuario, id_terapeuta) {response ->
+            Interation.postRequest(message, id_usuario, id_terapeuta) { response ->
                 if (!response.startsWith("Erro")) {
                     // Re-fetch messages from the database
                     Interation.getMessages(id_usuario, id_terapeuta) {
@@ -102,9 +102,15 @@ fun ChatScreen(modifier: Modifier = Modifier) {
                     // Handle error (e.g., show a toast or log the error)
                 }
             }
+        })
+    }
+}
 
-        }
-        )
+object ChatScreen {
+    val messages = mutableStateListOf<Message>()
+
+    fun clearMessages() {
+        messages.clear()
     }
 }
 

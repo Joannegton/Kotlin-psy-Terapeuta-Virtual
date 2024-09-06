@@ -1,6 +1,8 @@
 package com.joannegton.psyterapeuta
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -15,14 +17,23 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +53,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PsyTerapeutaTheme {
+                var expanded by remember { mutableStateOf(false) }
+
+                val id_usuario = 9
+                val id_terapeuta = "psy172551805015296"
                 Scaffold(
                     modifier = Modifier
                         .fillMaxSize()
@@ -54,12 +69,49 @@ class MainActivity : ComponentActivity() {
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Image(painter = painterResource(
-                                        id = R.drawable.psy_pequeno),
+                                    Image(
+                                        painter = painterResource(
+                                            id = R.drawable.psy_pequeno
+                                        ),
                                         contentDescription = "psy icon",
                                         modifier = Modifier.size(70.dp)
                                     )
-                                    Text(text = "Psy: Seu Terapeuta Virtual", fontSize = 20.sp, color = Color.White, fontWeight = FontWeight.Bold)
+                                    Text(
+                                        text = "Psy: Seu Terapeuta Virtual",
+                                        fontSize = 20.sp,
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                                IconButton(onClick = { expanded = true }) {
+                                    Icon(
+                                        imageVector = Icons.Default.MoreVert,
+                                        contentDescription = "Menu"
+                                    )
+                                }
+                                DropdownMenu(
+                                    expanded = expanded,
+                                    onDismissRequest = { expanded = false }
+                                ) {
+                                    DropdownMenuItem(
+                                        text = { Text("Limpar conversa") },
+                                        onClick = {
+                                            expanded = false
+                                            Interation.excludeMessages(id_usuario, id_terapeuta) { response ->
+                                                if (!response.startsWith("Erro")) {
+                                                    ChatScreen.clearMessages()
+                                                } else {
+                                                    Log.e("TAG", "Erro ao excluir mensagens: $response")
+                                                }
+                                            }
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("Editar Perfil") },
+                                        onClick = {
+                                            expanded = false
+                                        }
+                                    )
                                 }
                             },
                             colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
@@ -67,22 +119,26 @@ class MainActivity : ComponentActivity() {
                     },
                     containerColor = MaterialTheme.colorScheme.background
                 ) { innerPadding ->
-                        Box(modifier = Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center) {
-                            Image(
-                                painter = painterResource(id = R.drawable.psy_grande),
-                                contentDescription = "Background Image",
-                                modifier = Modifier
-                                    .size(500.dp)
-                                    .graphicsLayer(alpha = 0.5f), // Define a opacidade
-                            )
-                            ChatScreen()
-                        }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.psy_grande),
+                            contentDescription = "Background Image",
+                            modifier = Modifier
+                                .size(500.dp)
+                                .graphicsLayer(alpha = 0.5f), // Define a opacidade
+                        )
+                        ChatScreen()
+                    }
                 }
             }
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
@@ -99,8 +155,10 @@ fun GreetingPreview() {
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Image(painter = painterResource(
-                                id = R.drawable.psy_pequeno),
+                            Image(
+                                painter = painterResource(
+                                    id = R.drawable.psy_pequeno
+                                ),
                                 contentDescription = "psy icon",
                                 modifier = Modifier.size(70.dp)
                             )

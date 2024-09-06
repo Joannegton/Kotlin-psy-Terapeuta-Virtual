@@ -6,6 +6,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -20,7 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 object Interation {
-    private const val API_URL = " https://bc0c-201-55-46-78.ngrok-free.app/api/v1/interacoes/"
+    private const val API_URL = " https://4af4-45-179-106-136.ngrok-free.app/api/v1/interacoes/"
 
     private val client = HttpClient(CIO) {
         install(ContentNegotiation) {
@@ -72,6 +73,32 @@ object Interation {
                 }
             } catch (e: Exception) {
                 callback(emptyList())
+                Log.e("TAG", "Erro ao processar resposta: ${e.message}")
+            }
+        }
+    }
+
+    fun excludeMessages(id_usuario: Int, id_terapeuta: String, callback: (String) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response: HttpResponse = client.delete(API_URL + "delete") {
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        mapOf(
+                            "id_usuario" to id_usuario,
+                            "id_terapeuta" to id_terapeuta
+                        )
+                    )
+                }
+                if (response.status.value in 200..299) {
+                    val responseBody = response.body<String>()
+                    callback(responseBody)
+                } else {
+                    callback("Erro: ${response.status.description}")
+                    Log.e("TAG", "Erro: ${response.status.description}")
+                }
+            } catch (e: Exception) {
+                callback("Erro ao processar resposta: ${e.message}")
                 Log.e("TAG", "Erro ao processar resposta: ${e.message}")
             }
         }
