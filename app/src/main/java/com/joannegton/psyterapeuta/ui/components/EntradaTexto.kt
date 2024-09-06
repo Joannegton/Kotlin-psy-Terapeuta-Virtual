@@ -1,85 +1,109 @@
 package com.joannegton.psyterapeuta.ui.components
 
-
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Composable
 fun EntradaTexto(
-    onMessageSend: (String) -> Unit, // Callback para enviar mensagem
+    texto: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    imeAction: ImeAction = ImeAction.Next,
+    isSenha: Boolean = false,
+    linhaUnica: Boolean = true,
+    obrigatorio: Boolean = false,
+    modifier: Modifier = Modifier
 ) {
-    var userMessage by remember { mutableStateOf("") }
+    val senhaVisivel = remember { mutableStateOf(false) }
+    var erro by remember { mutableStateOf(obrigatorio) }
 
-    Row( verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(3.dp)) {
-        BasicTextField(
-            value = userMessage,
-            onValueChange = { userMessage = it },
-            textStyle = TextStyle(fontSize = 18.sp, color = Color.Black),
-            keyboardOptions = KeyboardOptions.Companion.Default.copy(
-                capitalization = KeyboardCapitalization.Sentences
-            ),
-            modifier = Modifier
-                .weight(1f)
-                .clip(RoundedCornerShape(50.dp))
-                .border(2.dp, MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(50.dp))
-                .background(Color.LightGray)
-                .padding(13.dp)
+    OutlinedTextField(
+        value = texto,
+        onValueChange = {
+            onValueChange(it)
+            erro = it.isBlank()
+        },
+        label = { Text(text = label) },
+        isError = erro,
+        singleLine = linhaUnica,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.LightGray,
+            unfocusedContainerColor = MaterialTheme.colorScheme.background,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
+            cursorColor = Color.Black,
+            focusedLabelColor = Color.Black,
+            unfocusedLabelColor = Color.LightGray,
+            focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+            unfocusedBorderColor = MaterialTheme.colorScheme.primary
+        ),
+        visualTransformation = if (isSenha && !senhaVisivel.value) PasswordVisualTransformation() else VisualTransformation.None,
+        trailingIcon = {
+            if (isSenha) {
+                val icone =
+                    if (senhaVisivel.value) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                IconButton(onClick = { senhaVisivel.value = !senhaVisivel.value }) {
+                    Icon(
+                        imageVector = icone,
+                        contentDescription = if (senhaVisivel.value) "Ocultar senha" else "Mostrar senha",
+                        tint = Color.LightGray
+                    )
+                }
 
-
+            }
+        },
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyboardType,
+            imeAction = imeAction
         )
-
-        Spacer(modifier = Modifier.width(2.dp))
-
-        Button(
-            onClick = {
-                if (userMessage.isNotBlank()) {
-                    onMessageSend(userMessage) // Chama o callback para enviar a mensagem
-                    userMessage = ""}
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = Color.LightGray),
-            modifier = Modifier.clip(CircleShape).border(2.dp, MaterialTheme.colorScheme.primaryContainer, CircleShape)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Send,
-                contentDescription = "Enviar",
-                modifier = Modifier.padding(2.dp)
-            )
-        }
+    )
+    if (erro) {
+        Text(
+            "Este campo é obrigatório",
+            textAlign = TextAlign.Center,
+            color = Color.Red,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(2.dp)
+        )
     }
 }
 
 @Preview
 @Composable
 private fun View() {
-    EntradaTexto(onMessageSend = {})
+    EntradaTexto(
+        texto = "",
+        onValueChange = {},
+        label = "Digite"
+    )
+    
 }

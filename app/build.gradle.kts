@@ -73,4 +73,6 @@ dependencies {
     implementation ("io.ktor:ktor-client-logging:2.0.0")
     implementation ("io.ktor:ktor-client-content-negotiation:2.0.0")
     implementation ("io.ktor:ktor-serialization-gson:2.0.0")
+    implementation("androidx.navigation:navigation-compose:2.8.0")
+
 }
