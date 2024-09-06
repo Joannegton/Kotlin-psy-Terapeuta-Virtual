@@ -1,5 +1,6 @@
 package com.joannegton.psyterapeuta.ui.views
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,13 +34,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.joannegton.psyterapeuta.R
 import com.joannegton.psyterapeuta.UsuarioService
+import com.joannegton.psyterapeuta.saveUserData
 import com.joannegton.psyterapeuta.ui.components.EntradaTexto
+import org.json.JSONObject
 
 @Composable
 fun LoginScreen(navHostController: NavHostController) {
 
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -81,6 +85,13 @@ fun LoginScreen(navHostController: NavHostController) {
                     if (it.startsWith("Erro")) {
                         return@login
                     }
+                    val jsonResponse = JSONObject(it)
+                    val idUsuario = jsonResponse.getInt("id_usuario")
+                    val idTerapeuta = jsonResponse.getString("id_terapeuta")
+
+                    // Save the user data
+                    saveUserData(context, idUsuario, idTerapeuta)
+
                     navHostController.navigate("chat") {
                         popUpTo("login") {
                             inclusive = true

@@ -1,5 +1,7 @@
 package com.joannegton.psyterapeuta
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import com.google.gson.Gson
 import io.ktor.client.HttpClient
@@ -192,15 +194,32 @@ object UsuarioService {
 
 data class Usuario(
     val id_usuario: Int,
-    val id_terapeuta: String,
     val nome: String,
     val email: String,
-    val senha: String
-)
+    val senha: String,
+    val id_terapeuta: String,
+    val data_nascimento: String,
+    val sexo: String
+    )
 
 fun formatarHoraParaBrasileiro(dataHora: String): String {
     val formatoOriginal = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     val formatoBrasileiro = SimpleDateFormat("dd/MM HH:mm", Locale("pt", "BR"))
     val data = formatoOriginal.parse(dataHora)
     return formatoBrasileiro.format(data)
+}
+
+fun saveUserData(context: Context, idUsuario: Int, idTerapeuta: String) {
+    val sharedPreferences: SharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.putInt("id_usuario", idUsuario)
+    editor.putString("id_terapeuta", idTerapeuta)
+    editor.apply()
+}
+
+fun getUserData(context: Context): Pair<Int, String> {
+    val sharedPreferences: SharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    val idUsuario = sharedPreferences.getInt("id_usuario", -1)
+    val idTerapeuta = sharedPreferences.getString("id_terapeuta", "Psy0")
+    return Pair(idUsuario, idTerapeuta ?: "")
 }

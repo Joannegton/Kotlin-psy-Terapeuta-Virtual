@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,7 @@ import com.joannegton.psyterapeuta.Interation
 import com.joannegton.psyterapeuta.Message
 import com.joannegton.psyterapeuta.R
 import com.joannegton.psyterapeuta.formatarHoraParaBrasileiro
+import com.joannegton.psyterapeuta.getUserData
 import com.joannegton.psyterapeuta.ui.components.EnvioTexto
 import com.joannegton.psyterapeuta.ui.components.SaidaTexto
 import com.joannegton.psyterapeuta.ui.components.TopBar
@@ -44,8 +46,7 @@ fun ChatScreen(modifier: Modifier = Modifier) {
     var isLoading by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
 
-    val id_usuario = 9
-    val id_terapeuta = "psy172551805015296"
+    val (id_usuario, id_terapeuta) = getUserData(LocalContext.current)
 
     LaunchedEffect(Unit) {
         isLoading = true

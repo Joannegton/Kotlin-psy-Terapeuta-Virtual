@@ -51,8 +51,8 @@ fun PsyScreen() {
             var isLoading by remember { mutableStateOf(false) }
             val listState = rememberLazyListState()
 
-            val id_usuario = 2
-            val id_terapeuta = "psy172508057914245"
+            val (id_usuario, id_terapeuta) = getUserData(LocalContext.current)
+
 
             // Carregar mensagens iniciais ao iniciar a tela
             LaunchedEffect(Unit) {
