@@ -23,8 +23,9 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+const val URL_BASE = "https://60b4-201-55-46-78.ngrok-free.app"
 object Interation {
-    private const val API_URL = " https://4af4-45-179-106-136.ngrok-free.app/api/v1/interacoes/"
+    private const val API_URL = "$URL_BASE/api/v1/interacoes/"
 
     private val client = HttpClient(CIO) {
         install(ContentNegotiation) {
@@ -125,7 +126,7 @@ data class Message(
     )
 
 object UsuarioService {
-    private const val API_URL = "https://4af4-45-179-106-136.ngrok-free.app/api/v1/users/"
+    private const val API_URL = "$URL_BASE/api/v1/users/"
 
     private val client = HttpClient(CIO) {
         install(ContentNegotiation) {
